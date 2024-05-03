@@ -6,8 +6,8 @@ setup(
     description='Read the state of the franka buttons',
     author='Giovanni Franzese',
     author_email='g.franzese@tudelft.nl',
-    packages=['ILoSA', 'franka_gripper.msg', 'franka_msgs.msg'],
-    install_requires=[],
+    packages=['franka_buttons'],
+    install_requires=['websockets', 'requests'],
     # Add other dependencies here
     classifiers=[
         'Development Status :: 5 - Production/Stable',

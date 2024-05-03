@@ -1,0 +1,11 @@
+<launch>
+    <arg name="robot_ip" />
+    <arg name="username" />
+    <arg name="password" />
+    
+    <node name="buttons_node" pkg="franka_buttons" type="buttons_listener.py" output="screen">
+        <param name="robot_ip" value="$(arg robot_ip)" /> 
+        <param name="username" value="$(arg username)" />
+        <param name="password" value="$(arg password)" /> 
+    </node>
+</launch>

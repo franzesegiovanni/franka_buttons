@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>franka_buttons</name>
-  <version>0.0.2</version>
+  <version>0.0.1</version>
   <description>Read the franka buttons and publish it in ROS</description>
 
   <maintainer email="g.franzese@tudelft.nl">Giovanni Franzese</maintainer>
