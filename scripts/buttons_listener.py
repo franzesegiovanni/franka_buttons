@@ -17,8 +17,7 @@ from requests.packages import urllib3
 from websockets.sync.client import connect #pip install --upgrade websockets
 
 import rospy
-from std_msgs.msg import Int32MultiArray
-
+from std_msgs.msg import Bool, Float32
 _logger = logging.getLogger('desk')
 
 TOKEN_PATH = '~/token.conf'
@@ -74,11 +73,11 @@ class Button:
     self.login()
     self._legacy = False
 
-    rospy.init_node('button_listener', anonymous=True)
-
-    rospy.sleep(1)
-
-    self.button_publisher = rospy.Publisher('franka/buttons', Int32MultiArray, queue_size=10)
+    self.button_x_publisher = rospy.Publisher('franka_buttons/x', Float32, queue_size=10)
+    self.button_y_publisher = rospy.Publisher('franka_buttons/y', Float32, queue_size=10)
+    self.button_circle_publisher = rospy.Publisher('franka_buttons/circle', Bool, queue_size=10)
+    self.button_cross_publisher = rospy.Publisher('franka_buttons/crosss', Bool, queue_size=10)
+    self.button_check_publisher = rospy.Publisher('franka_buttons/check', Bool, queue_size=10)
 
   @staticmethod
   def encode_password(username: str, password: str) -> bytes:
@@ -130,7 +129,6 @@ class Button:
     ctx.verify_mode = ssl.CERT_NONE
     with connect(
         f'wss://{self._hostname}/desk/api/navigation/events',
-        # server_hostname='robot.franka.de',
         ssl_context=ctx,
         additional_headers={
             'authorization': self._session.cookies.get('authorization')
@@ -173,19 +171,46 @@ class Button:
 
   def callback(self, event: typing.Dict) -> None:
       # print("Received event:", event)
-      feedback = [0,0,0,0]
-      buttons=['up', 'down', 'right', 'left']
+      feedback_x = 0
+      feedback_y = 0
+      feedback_circle = False
+      feedback_cross = False
+      feedback_check = False
+      # buttons=['circle', 'cross', 'check','up', 'down', 'right', 'left']
+
       read_events=list(event.keys())
       for i in range(len(read_events)):
-        for j in range(len(buttons)):
-          if read_events[i] == buttons[j]:
+          if read_events[i] == 'down':
             if event[read_events[i]] == True:
-              feedback[j] = 1
-      # print('buttons: ', buttons)
-      # print('feedback: ', feedback)
-      #Publish this in as a ROS topic
-      msg = Int32MultiArray(data=feedback)
-      self.button_publisher.publish(msg)        
+              feedback_x = 1
+          if read_events[i] == 'up':
+            if event[read_events[i]] == True:
+              feedback_x = -1
+          if read_events[i] == 'right':
+            if event[read_events[i]] == True:
+              feedback_y = 1
+          if read_events[i] == 'left':
+            if event[read_events[i]] == True:
+              feedback_y = -1
+          if read_events[i] == 'circle':
+            if event[read_events[i]] == True:
+              feedback_circle = True
+          if read_events[i] == 'cross':
+            if event[read_events[i]] == True:
+              feedback_cross = True
+          if read_events[i] == 'check':
+            if event[read_events[i]] == True:
+              feedback_check = True
+      msg_x = Float32(data=feedback_x)
+      msg_y = Float32(data=feedback_y)
+      msg_circle = Bool(data=feedback_circle)
+      msg_cross = Bool(data=feedback_cross)
+      msg_check = Bool(data=feedback_check)
+      self.button_x_publisher.publish(msg_x)
+      self.button_y_publisher.publish(msg_y)
+      self.button_circle_publisher.publish(msg_circle)
+      self.button_cross_publisher.publish(msg_cross)
+      self.button_check_publisher.publish(msg_check)     
 
           
 
