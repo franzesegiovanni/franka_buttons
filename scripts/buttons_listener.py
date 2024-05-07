@@ -76,7 +76,7 @@ class Button:
     self.button_x_publisher = rospy.Publisher('franka_buttons/x', Float32, queue_size=10)
     self.button_y_publisher = rospy.Publisher('franka_buttons/y', Float32, queue_size=10)
     self.button_circle_publisher = rospy.Publisher('franka_buttons/circle', Bool, queue_size=10)
-    self.button_cross_publisher = rospy.Publisher('franka_buttons/crosss', Bool, queue_size=10)
+    self.button_cross_publisher = rospy.Publisher('franka_buttons/cross', Bool, queue_size=10)
     self.button_check_publisher = rospy.Publisher('franka_buttons/check', Bool, queue_size=10)
 
   @staticmethod
